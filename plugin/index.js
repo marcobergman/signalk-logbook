@@ -58,28 +58,6 @@ module.exports = (app) => {
 
   const setStatus = app.setPluginStatus || app.setProviderStatus;
 
-  // The paths we want to listen and collect data for
-  const paths = [
-    'navigation.state', // Under way/stopped
-    'navigation.datetime', // Current time, for automated hourly entries
-    'navigation.position',
-    'navigation.gnss.type',
-    'navigation.headingTrue',
-    'navigation.speedThroughWater',
-    'navigation.speedOverGround',
-    'navigation.trip.log',
-    'navigation.courseRhumbline.nextPoint.position',
-    'environment.outside.pressure',
-    'environment.wind.directionTrue',
-    'environment.wind.speedOverGround',
-    'environment.water.swell.state',
-    'propulsion.*.state',
-    'propulsion.*.runTime',
-    'sails.inventory.*',
-    'steering.autopilot.state',
-    'communication.crewNames',
-    'communication.vhf.channel',
-  ];
 
   // We keep 15min of past state to allow slight backdating of entries
   const buffer = new CircularBuffer(16);
@@ -88,6 +66,34 @@ module.exports = (app) => {
   let state = {};
 
   plugin.start = () => {
+    const { configuration } = app.readPluginOptions();
+	if (!configuration) {
+		return;
+	}
+	 
+	 // The paths we want to listen and collect data for
+	 const paths = [
+		'navigation.state', // Under way/stopped
+		'navigation.datetime', // Current time, for automated hourly entries
+		'navigation.position',
+		'navigation.gnss.type',
+		'navigation.headingTrue',
+		'navigation.speedThroughWater',
+		'navigation.speedOverGround',
+		configuration.logSourcePath,
+		'navigation.courseRhumbline.nextPoint.position',
+		'environment.outside.pressure',
+		configuration.windDirectionSourcePath,
+		configuration.windSpeedSourcePath,
+		'environment.water.swell.state',
+		'propulsion.*.state',
+		'propulsion.*.runTime',
+		'sails.inventory.*',
+		'steering.autopilot.state',
+		'communication.crewNames',
+		'communication.vhf.channel',
+	 ];
+
     log = new Log(app.getDataDirPath());
     const subscription = {
       context: 'vessels.self',
@@ -244,7 +250,9 @@ module.exports = (app) => {
         };
       }
       const author = parseJwt(req.cookies.JAUTHENTICATION).id;
-      const data = stateToEntry(stats, req.body.text, author);
+	  
+      const { configuration } = app.readPluginOptions();
+      const data = stateToEntry(stats, req.body.text, author, configuration);
       if (req.body.category) {
         data.category = req.body.category;
       } else {
@@ -350,6 +358,21 @@ module.exports = (app) => {
           const: tz.tzCode,
           title: tz.label,
         })),
+	  },
+ 	 logSourcePath: {
+        type: 'string',
+        default: 'navigation.trip.log',
+        title: 'Choose the path that selects the log value',
+      },
+      windDirectionSourcePath: {
+        type: 'string',
+        default: 'environment.wind.directionTrue_smooth',
+        title: 'Choose the path that selects the wind direction value',
+      },
+      windSpeedSourcePath: {
+        type: 'string',
+        default: 'environment.wind.speedTrue_smooth',
+        title: 'Choose the path that selects the wind speed value',
       },
     },
   };

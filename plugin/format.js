@@ -6,7 +6,7 @@ function ms2kt(ms) {
   return parseFloat((ms * 1.94384).toFixed(1));
 }
 
-module.exports = function stateToEntry(state, text, author = '') {
+module.exports = function stateToEntry(state, text, author = '', configuration) {
   const data = {
     datetime: state['navigation.datetime'] || new Date().toISOString(),
     text,
@@ -35,8 +35,9 @@ module.exports = function stateToEntry(state, text, author = '') {
     }
     data.speed.sog = ms2kt(state['navigation.speedOverGround']);
   }
-  if (!Number.isNaN(Number(state['navigation.trip.log']))) {
-    data.log = parseFloat((state['navigation.trip.log'] / 1852).toFixed(1));
+  
+  if (!Number.isNaN(Number(state[configuration.logSourcePath]))) {
+    data.log = parseFloat((state[configuration.logSourcePath] / 1852).toFixed(1));
   }
   if (state['navigation.courseRhumbline.nextPoint.position']
     && !Number.isNaN(Number(state['navigation.courseRhumbline.nextPoint.position'].latitude))) {
@@ -45,17 +46,19 @@ module.exports = function stateToEntry(state, text, author = '') {
   if (!Number.isNaN(Number(state['environment.outside.pressure']))) {
     data.barometer = parseFloat((state['environment.outside.pressure'] / 100).toFixed(2));
   }
-  if (!Number.isNaN(Number(state['environment.wind.speedOverGround']))) {
+
+  if (!Number.isNaN(Number(state[configuration.windSpeedSourcePath]))) {
     if (!data.wind) {
       data.wind = {};
     }
-    data.wind.speed = ms2kt(state['environment.wind.speedOverGround']);
+    data.wind.speed = ms2kt(state[configuration.windSpeedSourcePath]);
+	
   }
-  if (!Number.isNaN(Number(state['environment.wind.directionTrue']))) {
+  if (!Number.isNaN(Number(state[configuration.windDirectionSourcePath]))) {
     if (!data.wind) {
       data.wind = {};
     }
-    data.wind.direction = rad2deg(state['environment.wind.directionTrue']);
+    data.wind.direction = rad2deg(state[configuration.windDirectionSourcePath]);
   }
   if (!Number.isNaN(Number(state['environment.water.swell.state']))) {
     if (!data.observations) {
