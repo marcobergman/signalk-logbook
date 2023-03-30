@@ -367,22 +367,22 @@ module.exports = (app) => {
       headingSourcePath: {
         type: 'string',
         default: 'navigation.headingTrue_smooth',
-        title: 'Choose the path that selects the wind direction value',
+        title: 'Choose the path that selects the boat heading',
       },
       speedSourcePath: {
         type: 'string',
         default: 'navigation.speedThroughWater',
-        title: 'Choose the path that selects the wind speed value',
+        title: 'Choose the path that selects the boat speed',
       },
       windDirectionSourcePath: {
         type: 'string',
         default: 'environment.wind.directionTrue_smooth',
-        title: 'Choose the path that selects the wind direction value',
+        title: 'Choose the path that selects the wind direction',
       },
       windSpeedSourcePath: {
         type: 'string',
         default: 'environment.wind.speedTrue_smooth',
-        title: 'Choose the path that selects the wind speed value',
+        title: 'Choose the path that selects the wind speed',
       },
     },
   };
