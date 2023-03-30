@@ -77,8 +77,8 @@ module.exports = (app) => {
 		'navigation.datetime', // Current time, for automated hourly entries
 		'navigation.position',
 		'navigation.gnss.type',
-		'navigation.headingTrue',
-		'navigation.speedThroughWater',
+		configuration.headingSourcePath,
+		configuration.speedSourcePath,
 		'navigation.speedOverGround',
 		configuration.logSourcePath,
 		'navigation.courseRhumbline.nextPoint.position',
@@ -359,10 +359,20 @@ module.exports = (app) => {
           title: tz.label,
         })),
 	  },
- 	 logSourcePath: {
+      logSourcePath: {
         type: 'string',
         default: 'navigation.trip.log',
         title: 'Choose the path that selects the log value',
+      },
+      headingSourcePath: {
+        type: 'string',
+        default: 'navigation.headingTrue_smooth',
+        title: 'Choose the path that selects the wind direction value',
+      },
+      speedSourcePath: {
+        type: 'string',
+        default: 'navigation.speedThroughWater',
+        title: 'Choose the path that selects the wind speed value',
       },
       windDirectionSourcePath: {
         type: 'string',

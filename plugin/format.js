@@ -20,14 +20,14 @@ module.exports = function stateToEntry(state, text, author = '', configuration) 
   if (state['navigation.gnss.type'] && data.position) {
     data.position.source = state['navigation.gnss.type'];
   }
-  if (!Number.isNaN(Number(state['navigation.headingTrue']))) {
-    data.heading = rad2deg(state['navigation.headingTrue']);
+  if (!Number.isNaN(Number(state[configuration.headingSourcePath]))) {
+    data.heading = rad2deg(state[configuration.headingSourcePath]);
   }
-  if (!Number.isNaN(Number(state['navigation.speedThroughWater']))) {
+  if (!Number.isNaN(Number(state[configuration.speedSourcePath]))) {
     if (!data.speed) {
       data.speed = {};
     }
-    data.speed.stw = ms2kt(state['navigation.speedThroughWater']);
+    data.speed.stw = ms2kt(state[configuration.speedSourcePath]);
   }
   if (!Number.isNaN(Number(state['navigation.speedOverGround']))) {
     if (!data.speed) {
@@ -52,7 +52,6 @@ module.exports = function stateToEntry(state, text, author = '', configuration) 
       data.wind = {};
     }
     data.wind.speed = ms2kt(state[configuration.windSpeedSourcePath]);
-	
   }
   if (!Number.isNaN(Number(state[configuration.windDirectionSourcePath]))) {
     if (!data.wind) {
